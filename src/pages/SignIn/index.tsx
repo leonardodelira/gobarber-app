@@ -3,7 +3,10 @@ import { Image, View, ScrollView, KeyboardAvoidingView, Platform, TextInput, Ale
 import { useNavigation } from '@react-navigation/native';
 import { Form } from '@unform/mobile';
 import { FormHandles } from '@unform/core';
+
 import * as Yup from 'yup';
+
+import { useAuth } from '../../hooks/auth';
 
 import getValidationErrors from '../../utils/getValidationErrors';
 
@@ -27,6 +30,10 @@ const SignIn: React.FC = () => {
 
   const navigation = useNavigation();
 
+  const { signIn, user } = useAuth();
+
+  console.log(user);
+
   const handleSignIn = useCallback(
     async (data: SignInFormData) => {
       try {
@@ -43,10 +50,10 @@ const SignIn: React.FC = () => {
           abortEarly: false,
         });
 
-        // await signIn({
-        //   email: data.email,
-        //   password: data.password,
-        // });
+        await signIn({
+          email: data.email,
+          password: data.password,
+        });
       } catch (err) {
         if (err instanceof Yup.ValidationError) {
           const errors = getValidationErrors(err);
@@ -61,7 +68,7 @@ const SignIn: React.FC = () => {
           'Ocorreu um erro ao fazer login. Verifique as credenciais.',
         );
       }
-    }, [],
+    }, [signIn],
   );
 
   return (
@@ -103,7 +110,7 @@ const SignIn: React.FC = () => {
                 secureTextEntry
                 placeholder="Senha"
                 autoCapitalize="none"
-                textContentType="newPassword"
+                textContentType="none"
                 autoCorrect={false}
                 returnKeyType="send"
                 onSubmitEditing={() => formRef.current?.submitForm()}

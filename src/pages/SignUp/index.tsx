@@ -6,6 +6,8 @@ import { FormHandles } from '@unform/core';
 
 import * as Yup from 'yup';
 
+import api from '../../services/api';
+
 import { useNavigation } from '@react-navigation/native';
 import Icon from 'react-native-vector-icons/Feather';
 
@@ -25,6 +27,8 @@ interface SignUpFormData {
 }
 
 const SignUp: React.FC = () => {
+  const navigation = useNavigation();
+
   const formRef = useRef<FormHandles>(null);
 
   const inputEmailRef = useRef<TextInput>(null);
@@ -47,7 +51,9 @@ const SignUp: React.FC = () => {
           abortEarly: false,
         });
 
-        Alert.alert('Uhuuul', 'Cadastro realizado com sucesso!');
+        await api.post('/users', data);
+
+        Alert.alert('Cadastro realizado com sucesso', 'Você já pode fazer login na apicação');
 
         navigation.goBack();
       } catch (err) {
@@ -66,8 +72,6 @@ const SignUp: React.FC = () => {
     },
     [],
   );
-
-  const navigation = useNavigation();
 
   return (
     <>
@@ -123,7 +127,7 @@ const SignUp: React.FC = () => {
                 autoCorrect={false}
                 secureTextEntry
                 returnKeyType="send"
-                textContentType="newPassword"
+                textContentType="none"
                 onSubmitEditing={() => {
                   formRef.current?.submitForm();
                 }}
