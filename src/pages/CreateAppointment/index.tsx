@@ -27,6 +27,8 @@ import {
   SectionContent,
   Hour,
   HourText,
+  OpenDatePickerButton,
+  OpenDatePickerText,
   CreateAppointmentButton,
   CreateAppointmentButtonText
 } from './styles';
@@ -58,6 +60,7 @@ const CreateAppointment: React.FC = () => {
   const [selectedHour, setSelectedHour] = useState(0);
   const [providers, setProviders] = useState<Provider[]>([]);
   const [selectedProvider, setSelectedProvider] = useState(routeParams.providerId);
+  const [showDatePicker, setShowDatePicker] = useState(false);
 
   useEffect(() => {
     api.get('providers').then(response => {
@@ -92,6 +95,7 @@ const CreateAppointment: React.FC = () => {
 
   const handleDateChanged = useCallback((event: any, date: Date | undefined) => {
     if (date) {
+      setShowDatePicker(false);
       setSelectedDate(date);
     }
   }, []);
@@ -141,6 +145,10 @@ const CreateAppointment: React.FC = () => {
       });
   }, [availability]);
 
+  const handleOpenDatePicker = useCallback(() => {
+    setShowDatePicker(state => !state);
+  }, []) 
+
   return (
     <Container>
       <Header>
@@ -173,14 +181,21 @@ const CreateAppointment: React.FC = () => {
       <Content>
         <Calendar>
           <Title>Escolha a data</Title>
-          <DateTimePicker
-            mode="date"
-            display="spinner"
-            textColor="white"
-            is24Hour
-            value={selectedDate}
-            onChange={handleDateChanged}
-          />
+
+          <OpenDatePickerButton onPress={handleOpenDatePicker}>
+            <OpenDatePickerText>Selecionar outra data</OpenDatePickerText>
+          </OpenDatePickerButton>
+
+          {showDatePicker && 
+            <DateTimePicker
+              mode="date"
+              display="spinner"
+              textColor="white"
+              is24Hour
+              value={selectedDate}
+              onChange={handleDateChanged}
+            />
+          }
         </Calendar>
 
         <Schedule>
